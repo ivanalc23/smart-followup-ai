@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFollowUp AI</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        textarea { height: 150px; font-family: monospace; }
+        button { background: #0070f3; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0051cb; }
+        .result { margin-top: 30px; padding: 20px; border-radius: 8px; display: none; }
+        .alert { background: #e3fcef; border-left: 5px solid #006644; }
+        .no-action { background: #ffebe6; border-left: 5px solid #bf2600; }
+        pre { white-space: pre-wrap; background: #f4f6f8; padding: 15px; border-radius: 6px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>SmartFollowUp AI - Auditor de Presupuestos</h2>
+        <form id="analyzerForm">
+            <div class="form-group">
+                <label>Nombre del Cliente</label>
+                <input type="text" id="clientName" value="Carlos Mendoza" required>
+            </div>
+            <div class="form-group">
+                <label>Nombre de tu Empresa</label>
+                <input type="text" id="businessName" value="Reformas Madrid" required>
+            </div>
+            <div class="form-group">
+                <label>Días desde el último mensaje</label>
+                <input type="number" id="days" value="8" required>
+            </div>
+            <div class="form-group">
+                <label>Resumen del Presupuesto enviado</label>
+                <input type="text" id="budget" value="Reforma completa de cuarto de baño por 3.450€" required>
+            </div>
+            <div class="form-group">
+                <label>Pegar Hilo de Correos (Historial)</label>
+                <textarea id="thread" required>De: presupuestos@reformasmadrid.com&#10;Para: carlos.mendoza@email.com&#10;&#10;Hola Carlos, te adjunto el presupuesto de 3.450€ que acordamos ayer.&#10;---&#10;De: carlos.mendoza@email.com&#10;&#10;Muchas gracias, lo reviso con mi pareja esta noche y te digo algo mañana sin falta.</textarea>
+            </div>
+            <button type="submit" id="submitBtn">Analizar Conversación</button>
+        </form>
+
+        <div id="resultBox" class="result">
+            <h3 id="resultStatus"></h3>
+            <div id="emailContent">
+                <h4>Asunto Sugerido:</h4>
+                <p id="mailSubject" style="font-weight: bold;"></p>
+                <h4>Cuerpo del Email:</h4>
+                <pre id="mailBody"></pre>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
