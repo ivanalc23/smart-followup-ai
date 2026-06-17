@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartFollowUp · Auditor de Presupuestos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F3EC;
+    --paper-dark:#EFE8DA;
+    --ink:#1B3A4B;
+    --ink-soft:#3E5A68;
+    --cota:#8A8478;
+    --alert:#E8632C;
+    --alert-soft:#FBE6DA;
+    --ok:#3D7A5C;
+    --ok-soft:#E1ECE4;
+    --line:#D9D2C0;
+    --white:#FFFDF9;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    padding: 48px 20px 80px;
+  }
+
+  .sheet{
+    max-width: 760px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 1.5px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    position: relative;
+  }
+
+  .sheet::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width: 14px; height: 100%;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--alert) 0 18px,
+      transparent 18px 30px
+    );
+    opacity:.85;
+  }
+
+  .header{
+    padding: 36px 40px 28px 56px;
+    border-bottom: 1.5px dashed var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header-left .eyebrow{
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--cota);
+    margin: 0 0 10px;
+  }
+
+  .header-left h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 0;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .header-left h1 em{
+    font-style: normal;
+    color: var(--alert);
+  }
+
+  .stamp{
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    transform: rotate(-3deg);
+    white-space: nowrap;
+  }
+
+  form{
+    padding: 32px 40px 8px 56px;
+  }
+
+  .field{
+    margin-bottom: 24px;
+  }
+
+  .field-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  label{
+    display:flex;
+    align-items:baseline;
+    gap: 8px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--ink);
+    margin-bottom: 9px;
+  }
+
+  label .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 10.5px;
+    color: var(--cota);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  input, textarea{
+    width: 100%;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 0;
+    padding: 11px 13px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    transition: background .15s ease, box-shadow .15s ease;
+  }
+
+  input:focus, textarea:focus{
+    outline: none;
+    background: var(--white);
+    box-shadow: 3px 3px 0 var(--alert);
+  }
+
+  textarea{
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  textarea::placeholder, input::placeholder{
+    color: var(--cota);
+  }
+
+  .field-hint{
+    font-size: 11px;
+    color: var(--cota);
+    margin-top: 6px;
+  }
+
+  .submit-row{
+    padding: 8px 40px 36px 56px;
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+
+  button{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--white);
+    border: 1.5px solid var(--ink);
+    padding: 14px 26px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--alert);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+
+  button:hover:not(:disabled){
+    transform: translate(-2px,-2px);
+    box-shadow: 6px 6px 0 var(--alert);
+  }
+
+  button:active:not(:disabled){
+    transform: translate(0,0);
+    box-shadow: 2px 2px 0 var(--alert);
+  }
+
+  button:disabled{
+    cursor: progress;
+    opacity: .75;
+    box-shadow: 4px 4px 0 var(--line);
+  }
+
+  .submit-note{
+    font-size: 11.5px;
+    color: var(--cota);
+  }
+
+  .result{
+    display:none;
+    margin: 0 40px 40px 56px;
+    border-top: 1.5px dashed var(--line);
+    padding-top: 28px;
+  }
+
+  .result-flag{
+    display:inline-flex;
+    align-items:center;
+    gap: 10px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    margin-bottom: 22px;
+    border: 1.5px solid currentColor;
+  }
+
+  .result-flag.is-alert{ color: var(--alert); background: var(--alert-soft); }
+  .result-flag.is-clear{ color: var(--ok); background: var(--ok-soft); }
+
+  .result-flag .dot{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .result-note{
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0 0 4px;
+  }
+
+  .email-block{
+    margin-top: 22px;
+  }
+
+  .email-block .label-sm{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--cota);
+    margin-bottom: 8px;
+  }
+
+  .subject-line{
+    font-family:'Source Serif 4', serif;
+    font-size: 19px;
+    color: var(--ink);
+    margin: 0 0 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  pre.body-text{
+    font-family:'Source Serif 4', serif;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--ink);
+    white-space: pre-wrap;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-left: 3px solid var(--alert);
+    padding: 22px 24px;
+    margin: 0;
+  }
+
+  .footer-mark{
+    text-align:center;
+    font-size: 11px;
+    color: var(--cota);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-top: 28px;
+  }
+
+  @media (max-width: 640px){
+    .field-row{ grid-template-columns: 1fr; gap: 0; }
+    .header, form, .submit-row, .result{ padding-left: 28px; padding-right: 24px; }
+    .header-left h1{ font-size: 23px; }
+    .sheet::before{ width: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    button{ transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="sheet">
+    <div class="header">
+      <div class="header-left">
+        <p class="eyebrow">Expediente de seguimiento · Nº auto</p>
+        <h1>SmartFollow<em>Up</em></h1>
+      </div>
+      <div class="stamp">Auditor IA</div>
+    </div>
+
+    <form id="analyzerForm">
+      <div class="field-row">
+        <div class="field">
+          <label for="clientName">Cliente <span class="tag">contacto</span></label>
+          <input type="text" id="clientName" value="Carlos Mendoza" required>
+        </div>
+        <div class="field">
+          <label for="businessName">Tu empresa <span class="tag">remitente</span></label>
+          <input type="text" id="businessName" value="Reformas Madrid" required>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="days">Días en silencio <span class="tag">nº</span></label>
+          <input type="number" id="days" value="8" required>
+        </div>
+        <div class="field">
+          <label for="budget">Presupuesto enviado <span class="tag">resumen</span></label>
+          <input type="text" id="budget" value="Reforma completa de cuarto de baño por 3.450€" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="thread">Hilo de correos <span class="tag">historial completo</span></label>
+        <textarea id="thread" placeholder="Pega aquí la conversación completa, de más antiguo a más reciente…" required>De: presupuestos@reformasmadrid.com
+Para: carlos.mendoza@email.com
+
+Hola Carlos, te adjunto el presupuesto de 3.450€ que acordamos ayer.
+---
+De: carlos.mendoza@email.com
+
+Muchas gracias, lo reviso con mi pareja esta noche y te digo algo mañana sin falta.</textarea>
+        <p class="field-hint">El auditor lee el tono y las promesas rotas, no solo las fechas.</p>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" id="submitBtn">Analizar conversación</button>
+        <span class="submit-note">Clasificación + redacción automática</span>
+      </div>
+    </form>
+
+    <div id="resultBox" class="result">
+      <div id="resultFlag" class="result-flag">
+        <span class="dot"></span>
+        <span id="resultStatus">Estado</span>
+      </div>
+      <p id="resultNote" class="result-note"></p>
+
+      <div id="emailContent" class="email-block">
+        <p class="label-sm">Asunto sugerido</p>
+        <p id="mailSubject" class="subject-line"></p>
+        <p class="label-sm">Cuerpo del correo</p>
+        <pre id="mailBody" class="body-text"></pre>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer-mark">Expediente generado automáticamente — revisar antes de enviar</p>
+
+  <script src="script.js"></script>
+</body>
+</html>
